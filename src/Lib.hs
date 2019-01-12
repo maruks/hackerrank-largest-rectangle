@@ -11,7 +11,6 @@ type Stack = [(Int, Int)]
 
 data State = State
   { maxSize :: Int
-  , index :: Int
   , stack :: Stack
   } deriving (Show)
 
@@ -23,20 +22,20 @@ findMax s@((height, idx):rest) current index maxSize leftWall =
     else let newMax = max maxSize $ (index - idx) * height
          in findMax rest current index newMax idx
 
-updateState :: State -> Int -> State
-updateState s@State {..} current =
+updateState :: State -> (Int, Int) -> State
+updateState s@State {..} (index, current) =
   case stack of
     ((height, _):_) ->
       case compare current height of
-        GT -> s { index = index + 1 , stack = (current, index) : stack}
-        EQ -> s { index = index + 1}
+        GT -> s {stack = (current, index) : stack}
+        EQ -> s
         LT ->
           let (newStack, newMax) = findMax stack current index maxSize 0
-          in State { index = index + 1 , stack = newStack , maxSize = newMax}
-    [] -> s { index = index + 1 , stack = [(current, index)]}
+          in State {stack = newStack , maxSize = newMax}
+    [] -> s {stack = [(current, index)]}
 
 largestRectangle :: [Int] -> Int
-largestRectangle xs = maxSize $ List.foldl' updateState (State 0 0 []) (xs ++ [0])
+largestRectangle xs = maxSize $ List.foldl' updateState (State 0 []) $ zip [0..] (xs ++ [0])
 
 naiveSolution :: [Int] -> Int
 naiveSolution [] = 0
