@@ -15,11 +15,11 @@ data State = State
   , stack :: Stack
   } deriving (Show)
 
-findMax :: Stack -> Int -> Int -> Int -> Int -> (Stack, Int, Int)
-findMax [] current index maxSize leftWall = ([], max maxSize ((index + 1) * current), 0)
+findMax :: Stack -> Int -> Int -> Int -> Int -> (Stack, Int)
+findMax [] current index maxSize leftWall = ([(current, 0)], max maxSize ((index + 1) * current))
 findMax s@((height, idx):rest) current index maxSize leftWall =
   if height < current
-    then (s, maxSize, leftWall)
+    then ((current, leftWall) : s, maxSize)
     else let newMax = max maxSize $ (index - idx) * height
          in findMax rest current index newMax idx
 
@@ -31,8 +31,8 @@ updateState s@State {..} current =
         GT -> s { index = index + 1 , stack = (current, index) : stack}
         EQ -> s { index = index + 1}
         LT ->
-          let (newStack, newMax, leftWall) = findMax stack current index maxSize 0
-          in State { index = index + 1 , stack = (current, leftWall) : newStack , maxSize = newMax}
+          let (newStack, newMax) = findMax stack current index maxSize 0
+          in State { index = index + 1 , stack = newStack , maxSize = newMax}
     [] -> s { index = index + 1 , stack = [(current, index)]}
 
 largestRectangle :: [Int] -> Int
