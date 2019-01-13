@@ -5,8 +5,7 @@ module Lib (
   ) where
 
 import Data.List as List
-import Data.Maybe as Maybe
-import Control.Monad
+import Control.Monad ((>=>))
 
 type Stack = [(Int, Int)]
 
