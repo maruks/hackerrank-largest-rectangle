@@ -1,6 +1,8 @@
 import Test.Hspec
 import Test.QuickCheck
 
+import Data.List
+
 import Lib
 
 genHeight :: Gen Int
@@ -12,6 +14,9 @@ listOfHeight = listOf genHeight
 main :: IO ()
 main = hspec $ do
   describe "largest rectangle" $ do
+    it "returns all possible subsequences" $ do
+      sort (subs "1234") `shouldBe` ["1","12","123","1234","2","23","234","3","34","4"]
+
     it "returns size of the largest rectangle" $ do
       largestRectangle [1,2,3,4,5] `shouldBe` 9
       largestRectangle [5,4,3,2,1] `shouldBe` 9

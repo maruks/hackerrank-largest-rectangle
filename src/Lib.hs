@@ -1,11 +1,12 @@
 {-# LANGUAGE RecordWildCards #-}
 
 module Lib (
-  largestRectangle, naiveSolution
+  largestRectangle, naiveSolution, subs
   ) where
 
 import Data.List as List
 import Data.Maybe as Maybe
+import Control.Monad
 
 type Stack = [(Int, Int)]
 
@@ -29,9 +30,8 @@ updateState s@State {..} (index, current) =
       case compare current height of
         GT -> s {stack = (current, index) : stack}
         EQ -> s
-        LT ->
-          let (newStack, newMax) = findMax stack current index maxSize 0
-          in State {stack = newStack , maxSize = newMax}
+        LT -> let (newStack, newMax) = findMax stack current index maxSize 0
+              in State {stack = newStack , maxSize = newMax}
     [] -> s {stack = [(current, index)]}
 
 largestRectangle :: [Int] -> Int
@@ -42,5 +42,4 @@ naiveSolution [] = 0
 naiveSolution xs = List.maximum $ (\x -> List.length x * List.minimum x) <$> subs xs
 
 subs :: [a] -> [[a]]
-subs xs = let ts = init $ tails xs
-          in List.concatMap (\(h:t) -> (\x -> h : x) <$> inits t) ts
+subs = (init . tails ) >=> (tail . inits)
